@@ -1,0 +1,117 @@
+body
+{
+	margin: 0;
+	padding: 0;
+	font-family: arial;
+}
+
+a
+{
+	color: blue;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color: white;
+	background-color: steelblue;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:visited hover
+{
+	color: white;
+	text-decoration: none;
+}
+
+#header
+{
+	clear: both;
+	background-color: silver;
+	text-align: right;
+}
+
+#logo
+{
+	font-weight: bold;
+	font-size: 32px;
+}
+
+#menu a
+{
+	color: black;
+	text-decoration: none;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+#menu a:visited
+{
+	color: black;
+	text-decoration: none;
+}
+
+#menu a:hover
+{
+	background-color: steelblue;
+	font-weight: bold;
+	color: white;
+}
+
+#menu
+{
+	clear: both;
+	background-color: lightsteelblue;
+}
+
+#left_menu
+{
+	float: left;
+	width: 15%;
+}
+
+#left_menu a
+{
+	font-size: 16px;
+	text-decoration: none;
+	color: black;
+}
+
+#left_menu a:hover
+{
+	font-weight: bold;
+	background: silver;
+	color: white;
+}
+
+#left_menu a:visited hover
+{
+	color: white;
+}
+
+#content
+{
+	clear: both;
+	margin: auto;
+}
+
+#right_content
+{
+	float: right;
+	width: 84%;
+}
+
+#userbars
+{
+	text-align: center;
+	clear: both;
+}
+
+#footer
+{
+	text-align: center;
+	font-size: 12px;
+	clear: both;
+	background-color: silver;
+}
