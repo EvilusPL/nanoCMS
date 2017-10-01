@@ -2,14 +2,14 @@
 
 class Userbars
 {
-	public $link = array();		// link array
-	public $picture = array();	// picture locations array
-	public $userbars_elements = 1;	// how many userbars we want to display?
+	public $link = array();
+	public $picture = array();
+	public $userbars_elements = 1;
 }
 
 $userbars = new Userbars();
 
 $userbars->link[0]="https://getfedora.org/";
-$userbars->picture[0]="images/fedora.png";
+$userbars->picture[0]="obrazki/fedora.png";
 
 ?>

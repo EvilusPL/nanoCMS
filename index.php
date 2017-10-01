@@ -4,15 +4,12 @@
 		<meta http-equiv="Content-Language" content="pl">
 		<link rel="Stylesheet" href="style.css">
 		<?php
-		// include required files to get nanoCMS working properly
-		require("header.inc.php"); // header settings
-		require("title.inc.php"); // title settings
-		require("menu.inc.php"); // menu settings
-		require("userbars.inc.php"); // userbars settings
-		require("footer.inc.php"); // footer settings
-		
-		// if mnu get is null or equals zero use the id to write title of the subpage
-		// otherwise, use name of the link from menu.inc.php
+		require("header.inc.php");
+		require("title.inc.php");
+		require("menu.inc.php");
+		require("blog.inc.php");
+		require("userbars.inc.php");
+		require("footer.inc.php");
 		if (intval($_GET['mnu'])==0) {
 			print("<title>".$title." - ".$_GET['id']."</title>");
 		}
@@ -30,7 +27,6 @@
 		</div>
 		<div id="menu">
 			<?php
-			// let's write the menu in horizontal view
 			for ($i = 0; $i < $menu->mnu_elements; $i++)
 			{
 				print "<a href=\"".$menu->link[$i]."\">".$menu->name[$i]."</a> ";
@@ -41,7 +37,6 @@
 			<div id="left_menu">
 				<ul>
 					<?php
-					// write menu in vertical view, in pointed list
 					for ($i = 0; $i < $menu->mnu_elements; $i++)		
 					{
 						print "<li><a href=\"".$menu->link[$i]."\">".$menu->name[$i]."</a></li>";
@@ -51,39 +46,135 @@
 			</div>
 			<div id="right_content">
 				<?php
-				// the main code that is under our interest - generating the page content!
-				if ($_GET['id']=="") {						// if page ID equals null
-					if (file_exists("contents/index.html")) {		// check if index.html exists
-					$page = fopen("contents/index.html", "r");		// if yes, open the file in read-only mode
-					while($line = @fgets($page, 1024))  {			// write contents to our page
-						print($line);
+                    if ($_GET['id']=="") {
+                        if (file_exists("contents/index.html")) {
+                            $page = fopen("contents/index.html", "r");
+                            while($line = @fgets($page, 1024))  {
+                                print($line);
+                            }
+                            fclose($page);
+                        }
+                        else {
+                            print("<h1>Error!</h1><br>");
+                            print("File with main page content is missing, it should be existing in <b>contents/index.html</b>");
+                        }
 					}
-					fclose($page);						// and close file
+					else if ($_GET['id']=='blog') {
+						if ($_GET['entry'] == "") {
+							if ($blog->blog_entries <= $blog->blog_entries_per_page) {
+								for ($i=$blog->blog_entries-1; $i>=0; $i--) {
+									print("<h1><a href=\"index.php?id=blog&entry=".$i."\">".$blog->name[$i]."</a></h1>");
+									print("<b>Author</b>: ".$blog->author[$i].", <b>date</b>: ".$blog->date[$i]."<br><br>");
+									if (file_exists("entries/".$blog->entry[$i].".html")) {
+										$entry = fopen("entries/".$blog->entry[$i].".html", "r");
+										while ($entry_line = @fgets($entry, 1024)) {
+											print($entry_line);
+										}
+										print("<br><br><a href=\"index.php?id=blog&entry=".$i."#disqus_thread\">Click to comment entry</a><br><hr>");
+										fclose($entry);
+									}
+									else {
+										print("<b>Error! Entry not found! Report it to the webmaster!!</b>");
+									}
+								}
+							}
+							else {
+								if ($_GET['page']=="") {
+									$pageID = 1;
+								}
+								else {
+									$pageID = intval($_GET['page']);
+								}
+								for ($i=$blog->blog_entries-(($pageID-1)*$blog->blog_entries_per_page)-1; ($i>=$blog->blog_entries-(($pageID-1)*$blog->blog_entries_per_page)-$blog->blog_entries_per_page); $i--) {
+									if ($i < 0) {
+										break;
+									}
+									print("<h1><a href=\"index.php?id=blog&entry=".$i."\">".$blog->name[$i]."</a></h1>");
+									print("<b>Author</b>: ".$blog->author[$i].", <b>date</b>: ".$blog->date[$i]."<br><br>");
+									if (file_exists("entries/".$blog->entry[$i].".html")) {
+										$entry = fopen("entries/".$blog->entry[$i].".html", "r");
+										while ($entry_line = @fgets($entry, 1024)) {
+											print($entry_line);
+										}
+										print("<br><br><a href=\"index.php?id=blog&entry=".$i."#disqus_thread\">Click to comment entry</a><br><hr>");
+										fclose($entry);
+									}
+									else {
+										print("<b>Error! Entry not found! Report it to the webmaster!!</b>");
+									}
+								}
+								print("<hr><br>");
+								for ($j = 1; $j <= ($blog->blog_entries % $blog->blog_entries_per_page)+1; $j++)
+								{
+									if ($j == $pageID)
+									{
+										print(" <b>".$pageID."</b> ");
+									}
+									else
+									{
+										print(" <a href=\"index.php?id=blog&page=".$j."\">".$j."</a> ");
+									}
+								}
+							}
+						}
+						else {
+							$entryID=intval($_GET['entry']);
+							print("<h1>".$blog->name[$entryID]."</h1>");
+							print("<b>Author</b>: ".$blog->author[$entryID].", <b>date</b>: ".$blog->date[$entryID]."<br><br>");
+							if (file_exists("entries/".$blog->entry[$entryID].".html")) {
+								$entry = fopen("entries/".$blog->entry[$entryID].".html", "r");
+								while ($entry_line = @fgets($entry, 1024)) {
+									print($entry_line);
+								}
+								fclose($entry);
+							}
+							else {
+								print("<b>Error! Entry not found! Report it to the webmaster!!</b>");
+							}
+							?>
+							<hr><br><br>
+							<div id="disqus_thread"></div>
+							<script>
+
+							/**
+							*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+							*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+							
+							var disqus_config = function () {
+							this.page.url = "<?php print($siteURL."index.php?id=blog&entry=".$_GET['entry']); ?>";  // Replace PAGE_URL with your page's canonical URL variable
+							this.page.identifier = "<?php print($_GET['entry']); ?>"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+							};
+							
+							(function() { // DON'T EDIT BELOW THIS LINE
+							var d = document, s = d.createElement('script');
+							s.src = <?php print("'https://".$blog->disqus_domain_name.".disqus.com/embed.js';");
+							s.setAttribute('data-timestamp', +new Date());
+							(d.head || d.body).appendChild(s);
+							})();
+							</script>
+							<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+							<?php
+						}
 					}
-					else {							// if not exists, throw the error
-						print("<h1>Error!</h1><br>");
-						print("There is no configured main page, it should be in <b>contents/index.html</b>");
-					}
-				}
-				else {								// if page ID equals any other value
-					if(file_exists("contents/".$_GET['id'].".html"))  {	// do the same thing like code above
-					$page = fopen("contents/".$_GET['id'].".html", "r");	// but with parameter to read and print custom file
-					while($line = @fgets($page, 1024)) {
-						print($line);
-					}
-						fclose($page);
-					}
-					else {
-						print("<h1>Error 404!</h1><br>");
-						print("There is no such page! Maybe there is dead link? Contact with webmaster");
-					}
-				}
+                    else {
+                        if(file_exists("contents/".$_GET['id'].".html"))  {
+                            $page = fopen("contents/".$_GET['id'].".html", "r");
+                            while($line = @fgets($page, 1024)) {
+                                print($line);
+                            }
+                            fclose($page);
+                        }
+                        else {
+                            print("<h1>Error 404!</h1><br>");
+                            print("There is no such page! Maybe I did some mistake? Contact with me to report missing page.");
+                        }
+                    }
                 ?>
+				
 			</div>
 		</div>
 		<div id="userbars">
                 <?php
-                // print userbars defined in userbars.inc.php
                 print("<br><br>");
                 for ($i = 0; $i < $userbars->userbars_elements; $i++) {
                     print("<a href=\"".$userbars->link[$i]."\" target=\"blank\"><img src=\"".$userbars->picture[$i]."\"></a>");
@@ -92,10 +183,9 @@
                 ?>
 		</div>
 		<div id="footer">
-		<?php
-		// print footer, with data from footer.inc.php
-                print("&copy; ".$creationYear."-".date("Y")." ".$author.". ".$license."<br>");
-                print("<br>Powered by nanoCMS, &copy; 2016-2017 Jarosław Rauza. Released under GNU GPL license");
+				<?php
+                    print("&copy; ".$creationYear."-".date("Y")." ".$author.". ".$license."<br>");
+                    print("<br>Uses <a href=\"https://github.com/EvilusPL/nanoCMS/\">nanoCMS</a>, &copy; 2016-2017 Jarosław Rauza. Released under GNU GPL license");
                 ?>
 		</div>
 	</body>

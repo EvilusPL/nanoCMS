@@ -1,7 +1,6 @@
 <?php
 
-// Define title of your page
-
-$title = "My Home Page";
+$siteURL = "https://my.webpage.com/";
+$title = "My webpage";
 
 ?>
