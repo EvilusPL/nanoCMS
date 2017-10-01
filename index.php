@@ -147,7 +147,7 @@
 							
 							(function() { // DON'T EDIT BELOW THIS LINE
 							var d = document, s = d.createElement('script');
-							s.src = <?php print("'https://".$blog->disqus_domain_name.".disqus.com/embed.js';");
+							s.src = <?php print("'https://".$blog->disqus_domain_name.".disqus.com/embed.js';");?>
 							s.setAttribute('data-timestamp', +new Date());
 							(d.head || d.body).appendChild(s);
 							})();
