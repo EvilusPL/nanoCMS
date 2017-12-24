@@ -10,8 +10,11 @@
 		require("blog.inc.php");
 		require("userbars.inc.php");
 		require("footer.inc.php");
-		if (intval($_GET['mnu'])==0) {
+		if ((intval($_GET['mnu'])==0) && ($_GET['id']!='blog')) {
 			print("<title>".$title." - ".$_GET['id']."</title>");
+		}
+		else if (($_GET['id']=='blog')) {
+			print("<title>".$title." - Blog - ".$blog->name[intval($_GET['entry'])]."</title>");
 		}
 		else {
 			print("<title>".$title." - ".$menu->name[intval($_GET['mnu'])]."</title>");
