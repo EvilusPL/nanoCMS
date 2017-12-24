@@ -14,7 +14,12 @@
 			print("<title>".$title." - ".$_GET['id']."</title>");
 		}
 		else if (($_GET['id']=='blog')) {
-			print("<title>".$title." - Blog - ".$blog->name[intval($_GET['entry'])]."</title>");
+			if ($_GET['entry']=="") {
+				print("<title>".$title." - Blog</title>");
+			}
+			else {
+				print("<title>".$title." - Blog - ".$blog->name[intval($_GET['entry'])]."</title>");
+			}
 		}
 		else {
 			print("<title>".$title." - ".$menu->name[intval($_GET['mnu'])]."</title>");
