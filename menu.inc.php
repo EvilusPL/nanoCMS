@@ -4,7 +4,6 @@ class Menu
 {
 	public $link = array();
 	public $name = array();
-	public $mnu_elements = 2;
 }
 
 $menu = new Menu();

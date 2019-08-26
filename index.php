@@ -10,11 +10,24 @@
 		require("blog.inc.php");
 		require("userbars.inc.php");
 		require("footer.inc.php");
-		if ((intval($_GET['mnu'])==0) && ($_GET['id']!='blog')) {
-			print("<title>".$title." - ".$_GET['id']."</title>");
+
+		$mnu = 0;
+		$id = "index";
+
+
+		if (isset($_GET['mnu'])) {
+			$mnu = intval($_GET['mnu']);
 		}
-		else if (($_GET['id']=='blog')) {
-			if ($_GET['entry']=="") {
+
+		if (isset($_GET['id'])) {
+			$id = $_GET['id'];
+		}
+
+		if ($mnu == 0 && ($id != 'blog')) {
+			print("<title>".$title." - ".$id."</title>");
+		}
+		else if (($id=='blog')) {
+			if (!isset($_GET['entry'])) {
 				print("<title>".$title." - Blog</title>");
 			}
 			else {
@@ -22,7 +35,7 @@
 			}
 		}
 		else {
-			print("<title>".$title." - ".$menu->name[intval($_GET['mnu'])]."</title>");
+			print("<title>".$title." - ".$menu->name[$mnu]."</title>");
 		}
 		?>
 	</head>
@@ -35,7 +48,7 @@
 		</div>
 		<div id="menu">
 			<?php
-			for ($i = 0; $i < $menu->mnu_elements; $i++)
+			for ($i = 0; $i < count($menu->link); $i++)
 			{
 				print "<a href=\"".$menu->link[$i]."\">".$menu->name[$i]."</a> ";
 			}
@@ -45,7 +58,7 @@
 			<div id="left_menu">
 				<ul>
 					<?php
-					for ($i = 0; $i < $menu->mnu_elements; $i++)		
+					for ($i = 0; $i < count($menu->link); $i++)		
 					{
 						print "<li><a href=\"".$menu->link[$i]."\">".$menu->name[$i]."</a></li>";
 					}
@@ -54,7 +67,7 @@
 			</div>
 			<div id="right_content">
 				<?php
-                    if ($_GET['id']=="") {
+                    if (($id == "index") && ($mnu == 0)) {
                         if (file_exists("contents/index.html")) {
                             $page = fopen("contents/index.html", "r");
                             while($line = @fgets($page, 1024))  {
@@ -67,10 +80,10 @@
                             print("File with main page content is missing, it should be existing in <b>contents/index.html</b>");
                         }
 					}
-					else if ($_GET['id']=='blog') {
-						if ($_GET['entry'] == "") {
-							if ($blog->blog_entries <= $blog->blog_entries_per_page) {
-								for ($i=$blog->blog_entries-1; $i>=0; $i--) {
+					else if ($id == 'blog') {
+						if (!isset($_GET['entry'])) {
+							if (count($blog->entry) <= $blog->blog_entries_per_page) {
+								for ($i=count($blog->entry)-1; $i>=0; $i--) {
 									print("<h1><a href=\"index.php?id=blog&entry=".$i."\">".$blog->name[$i]."</a></h1>");
 									print("<b>Author</b>: ".$blog->author[$i].", <b>date</b>: ".$blog->date[$i]."<br><br>");
 									if (file_exists("entries/".$blog->entry[$i].".html")) {
@@ -87,13 +100,13 @@
 								}
 							}
 							else {
-								if ($_GET['page']=="") {
+								if (!isset($_GET['page'])) {
 									$pageID = 1;
 								}
 								else {
 									$pageID = intval($_GET['page']);
 								}
-								for ($i=$blog->blog_entries-(($pageID-1)*$blog->blog_entries_per_page)-1; ($i>=$blog->blog_entries-(($pageID-1)*$blog->blog_entries_per_page)-$blog->blog_entries_per_page); $i--) {
+								for ($i=count($blog->entry)-(($pageID-1)*$blog->blog_entries_per_page)-1; ($i>=count($blog->entry)-(($pageID-1)*$blog->blog_entries_per_page)-$blog->blog_entries_per_page); $i--) {
 									if ($i < 0) {
 										break;
 									}
@@ -112,7 +125,7 @@
 									}
 								}
 								print("<hr><br>");
-								for ($j = 1; $j <= ($blog->blog_entries % $blog->blog_entries_per_page)+1; $j++)
+								for ($j = 1; $j <= (count($blog->entry) % $blog->blog_entries_per_page)+1; $j++)
 								{
 									if ($j == $pageID)
 									{
@@ -165,8 +178,8 @@
 						}
 					}
                     else {
-                        if(file_exists("contents/".$_GET['id'].".html"))  {
-                            $page = fopen("contents/".$_GET['id'].".html", "r");
+                        if(file_exists("contents/".$id.".html"))  {
+                            $page = fopen("contents/".$id.".html", "r");
                             while($line = @fgets($page, 1024)) {
                                 print($line);
                             }
@@ -184,7 +197,7 @@
 		<div id="userbars">
                 <?php
                 print("<br><br>");
-                for ($i = 0; $i < $userbars->userbars_elements; $i++) {
+                for ($i = 0; $i < count($userbars->link); $i++) {
                     print("<a href=\"".$userbars->link[$i]."\" target=\"blank\"><img src=\"".$userbars->picture[$i]."\"></a>");
                 }
                 print("<br><br>");
