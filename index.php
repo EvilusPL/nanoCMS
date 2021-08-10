@@ -4,81 +4,39 @@
 		<meta http-equiv="Content-Language" content="pl">
 		<link rel="Stylesheet" href="style.css">
 		<?php
-		require("header.inc.php");
-		require("title.inc.php");
 		require("menu.inc.php");
 		require("blog.inc.php");
 		require("userbars.inc.php");
 		require("footer.inc.php");
+		require("nanocms.inc.php");
 
-		$mnu = 0;
-		$id = "index";
+		$nanocms = new nanoCMS();
 
-
-		if (isset($_GET['mnu'])) {
-			$mnu = intval($_GET['mnu']);
-		}
-
-		if (isset($_GET['id'])) {
-			$id = $_GET['id'];
-		}
-
-		if ($mnu == 0 && ($id != 'blog')) {
-			print("<title>".$title." - ".$id."</title>");
-		}
-		else if (($id=='blog')) {
-			if (!isset($_GET['entry'])) {
-				print("<title>".$title." - Blog</title>");
-			}
-			else {
-				print("<title>".$title." - Blog - ".$blog->name[intval($_GET['entry'])]."</title>");
-			}
-		}
-		else {
-			print("<title>".$title." - ".$menu->name[$mnu]."</title>");
-		}
+		$nanocms->printTitle();
+		
 		?>
 	</head>
 	<body>
 		<div id="header">
             <?php
-			print("<div id=\"logo\">".$logo."</div>");
-			print("<div id=\"slogan\">".$slogan."</div>");
+				$nanocms->printHeader();
             ?>
 		</div>
 		<div id="menu">
 			<?php
-			for ($i = 0; $i < count($menu->link); $i++)
-			{
-				print "<a href=\"".$menu->link[$i]."\">".$menu->name[$i]."</a> ";
-			}
+				$nanocms->printMenuHorizontal();
 			?>
 		</div>
 		<div id="content">
 			<div id="left_menu">
-				<ul>
-					<?php
-					for ($i = 0; $i < count($menu->link); $i++)		
-					{
-						print "<li><a href=\"".$menu->link[$i]."\">".$menu->name[$i]."</a></li>";
-					}
-					?>
-				</ul>
+				<?php
+					$nanocms->printMenuVertical();
+				?>
 			</div>
 			<div id="right_content">
 				<?php
                     if (($id == "index") && ($mnu == 0)) {
-                        if (file_exists("contents/index.html")) {
-                            $page = fopen("contents/index.html", "r");
-                            while($line = @fgets($page, 1024))  {
-                                print($line);
-                            }
-                            fclose($page);
-                        }
-                        else {
-                            print("<h1>Error!</h1><br>");
-                            print("File with main page content is missing, it should be existing in <b>contents/index.html</b>");
-                        }
+                        $nanocms->printContent("contents/index.html");
 					}
 					else if ($id == 'blog') {
 						if (!isset($_GET['entry'])) {
@@ -178,17 +136,7 @@
 						}
 					}
                     else {
-                        if(file_exists("contents/".$id.".html"))  {
-                            $page = fopen("contents/".$id.".html", "r");
-                            while($line = @fgets($page, 1024)) {
-                                print($line);
-                            }
-                            fclose($page);
-                        }
-                        else {
-                            print("<h1>Error 404!</h1><br>");
-                            print("There is no such page! Maybe I did some mistake? Contact with me to report missing page.");
-                        }
+                        $nanocms->printContent("contents/".$id.".html");
                     }
                 ?>
 				
